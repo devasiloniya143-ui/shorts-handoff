@@ -26,8 +26,11 @@ user से (या task prompt से) ये निकालो; जो न �
 ## 2. Drive से वीडियो लाओ
 1. Google Drive में फ़ोल्डर ढूंढो: `title contains '<नाम>' and mimeType = 'application/vnd.google-apps.folder'`
    (आम तौर पर *Claude Video Editing* के अंदर)। फिर `parentId = '<id>'` से वीडियो फ़ाइलें।
-2. `download_file_content` से वीडियो लाओ — tool result में फ़ाइल का local path आता है; उसे `work/<folder>/raw.mp4` में कॉपी करो।
-   बहुत बड़ी फ़ाइल न आए तो user को बताओ (फ़ोन से 1080p/कम लंबाई में डालने को कहो)।
+2. **Drive connector सिर्फ़ 10 MB तक की फ़ाइल देता है।** असली फ़ुटेज इससे बड़ी होती है, इसलिए:
+   - user का कंप्यूटर ऑन हो: Google Drive desktop `G:\My Drive\Claude Video Editing\Videos` (connected folder) से
+     `device_stage_files` (≤ 250 MB प्रति call ठीक चलता है; 400 MB/फ़ाइल सीमा — उससे बड़ी फ़ाइल नहीं आएगी)।
+   - तैयार वीडियो वापस: `SendUserFile` → `file_uuid` → `device_commit_files` → `Videos\Final Render\`।
+   - कंप्यूटर बंद हो: अभी कोई भरोसेमंद रास्ता नहीं (10 MB सीमा) — user को बताओ।
 3. फ़ोल्डर में कोई text/notes फ़ाइल हो तो वो भी पढ़ो — उसमें requirement हो सकती है।
 
 ## 3. Transcription (captions + clip चुनने के लिए)
@@ -35,6 +38,11 @@ user से (या task prompt से) ये निकालो; जो न �
 python3 $E transcribe work/X/raw.mp4 work/X/words.json        # faster-whisper model चाहिए
 python3 $E text work/X/words.json                              # timestamps के साथ पूरा transcript
 ```
+**अनुभव (Food Challenge, 28 Nov 2026):** whisper.cpp (pywhispercpp) इस 2-core क्लाउड पर ~15× धीमा था — मत इस्तेमाल करो।
+faster-whisper small (int8, `beam_size=1`, numpy audio input — `av` वाला path टूटा है) ≈ real-time। हिंदी ट्रांसक्रिप्ट कच्चा आता है:
+उसे **सिर्फ़ timing + मतलब** के लिए इस्तेमाल करो, captions Claude साफ़ हिंदी में खुद लिखे (`examples/food-challenge/make_plans.py` का `CAP`)।
+model user के PC ब्राउज़र से HF से उतारा (model.bin 2 range-हिस्सों में, क्योंकि 400 MB staging सीमा) और sha256 मिलाया।
+
 **अगर model नहीं है** (huggingface.co ब्लॉक), इनमें से जो उपलब्ध हो:
 - `~/claude-video-kit/models/faster-whisper-small/` में model फ़ाइलें Drive से लाओ (अगर user ने Drive पर रखी हैं: `Claude Video Editing/models/faster-whisper-small/`)।
 - YouTube auto-captions: raw वीडियो को **private** अपलोड करो → कुछ मिनट बाद captions API (`captions.list` → `captions.download?tfmt=vtt`) से VTT लाओ →
@@ -48,6 +56,11 @@ python3 $E text work/X/words.json                              # timestamps क�
 - हर clip की शुरुआत/अंत शब्द की सीमा पर रखो (words.json के `s`/`e`), बीच में शब्द न कटे।
 
 ## 5. Render
+- **कई क्लिप वाला vlog/reel:** `compose.py plan.json` — scenes/segments, ducked music, SFX, timer/hook/label/big overlays,
+  word-highlight captions। उदाहरण: `examples/food-challenge/make_plans.py`।
+  4K iPhone HEVC: पहले 720×1280 proxies बनाओ (vlog इन्हीं से, ~2 सेकंड/सेकंड); reel originals से (बेहतर quality)।
+  Music: Mixkit (free licence) user के PC ब्राउज़र से; SFX: `Barty-Bart motion-graphics/sfx` + `ghost-editor/library/sfx` (CC0)।
+- **एक लंबी वीडियो से clips:**
 हर आउटपुट के लिए `work/X/plan_<n>.json` (फ़ॉर्मेट `edit.py` के ऊपर लिखा है) और:
 ```bash
 python3 $E render work/X/plan_1.json
