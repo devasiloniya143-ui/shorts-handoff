@@ -69,6 +69,30 @@ if [ "$FULL" = 1 ]; then
   $PIP openai-whisper 2>/dev/null || $PIP --break-system-packages openai-whisper
 fi
 
+# Caption fonts (Hindi + English): Baloo 2 ExtraBold from npm (@fontsource), converted to TTF for libass
+say "Caption fonts (Baloo 2)"
+$PIP fonttools brotli 2>/dev/null || $PIP --break-system-packages fonttools brotli
+mkdir -p "$HOME/.fonts" /tmp/cve-fonts
+( cd /tmp/cve-fonts && npm pack -s @fontsource/baloo-2 >/dev/null 2>&1 && tar xzf fontsource-baloo-2-*.tgz ) \
+ && python3 - <<'PY'
+import glob, os
+from fontTools.ttLib import TTFont
+for f in glob.glob('/tmp/cve-fonts/package/files/baloo-2-*-800-normal.woff2'):
+    if 'devanagari-800' in f or 'latin-800' in f:
+        t = TTFont(f); t.flavor = None
+        t.save(os.path.expanduser('~/.fonts/' + os.path.basename(f).replace('.woff2', '.ttf')))
+PY
+fc-cache -f >/dev/null 2>&1 || true
+
+# Whisper model for word-timed captions (faster-whisper "small", multilingual incl. Hindi).
+# Downloads from huggingface.co — only works if the session's network allows that host.
+MODEL_DIR="$KIT_DIR/models/faster-whisper-small"
+if [ ! -f "$MODEL_DIR/model.bin" ]; then
+  say "Whisper model -> $MODEL_DIR"
+  python3 -c "from huggingface_hub import snapshot_download as d; d('Systran/faster-whisper-small', local_dir='$MODEL_DIR')" >/dev/null 2>&1 \
+    && echo "  model ok" || echo "  !! huggingface.co blocked — see WORKFLOW.md 'Transcription' for the fallback"
+fi
+
 # ---------------------------------------------------------------- 2. skills
 say "#03 kajisho5/ffmpeg-skill";        r=$(clone kajisho5/ffmpeg-skill)        && link_skill "$r" ffmpeg-skill
 say "#04 ychoi-kr/claude-ffmpeg-skill"; r=$(clone ychoi-kr/claude-ffmpeg-skill) && link_skill "$r" ffmpeg-usage

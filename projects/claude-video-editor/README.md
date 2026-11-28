@@ -3,6 +3,10 @@
 "Turn Claude into a Video Editor — 15 free GitHub repos" वाली फोटो (`source-image.jpg`, Google Drive: *Claude Video Editing / Skills and repo*) के सारे repos यहाँ एक जगह हैं।
 यह फ़ोल्डर GitHub पर है, इसलिए **कंप्यूटर बंद होने पर भी** कोई scheduled task (क्लाउड सेशन) इसे clone करके एक कमांड में सारे टूल्स और स्किल्स इंस्टॉल कर सकता है।
 
+## वीडियो एडिट करवाने का तरीका
+फ़ोन से Drive पर फ़ोल्डर बनाओ → उसमें वीडियो डालो → chat में फ़ोल्डर का नाम + requirement बताओ ("3 viral reels", "8 मिनट long video" …)।
+पूरा step-by-step तरीका: **[WORKFLOW.md](WORKFLOW.md)** · रेंडर इंजन: **`edit.py`** (zoom, transitions, catchy हिंदी/English captions)।
+
 ## एक कमांड में सेटअप
 
 ```bash
