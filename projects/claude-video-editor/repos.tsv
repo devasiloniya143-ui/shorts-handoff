@@ -1,0 +1,18 @@
+# no	image_name	github_repo	kind	install
+# kind: tool = CLI/python package, skill = Claude skill repo, list = reference list, model = GPU research model
+# install: core = setup.sh installs by default, full = only with FULL=1, ref = cloned as reference only
+01	yt-dlp	yt-dlp/yt-dlp	tool	core
+02	Whisper	openai/whisper	tool	core
+03	FFmpeg Skill (9.5k)	kajisho5/ffmpeg-skill	skill	core
+04	FFmpeg Skill (N/A)	ychoi-kr/claude-ffmpeg-skill	skill	core
+05	Ghost Editor	kurbaitaev/ghost-editor	skill	core
+06	Claude Shorts	AgriciDaniel/claude-shorts	skill	core
+07	Three.js Skills (4.3k)	CloudAI-X/threejs-skills	skill	core
+08	Three.js Skills (31)	cesartevisual/threejs-skills	skill	core
+09	Motion Skills (2.0k)	iart-ai/motion-skills	skill	core
+10	Motion Skills (1.4k)	Barty-Bart/motion-graphics	skill	core
+11	Motion Skills (99)	iart-ai/javascript-animation-skills	skill	core
+12	MotionClone (545)	LPengYang/MotionClone	model	full
+13	MotionClone (525)	LPengYang/MotionClone	model	full
+14	HyperFrames	heygen-com/hyperframes	skill	core
+15	Awesome Skills	ComposioHQ/awesome-claude-skills	list	ref

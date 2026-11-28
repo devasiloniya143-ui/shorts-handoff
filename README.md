@@ -6,3 +6,6 @@ Temporary home for finished Shorts videos (the video is removed after each YouTu
 `kit/tech.js` is the shared 3D tech kit for the Deep Dive 3D style (copy it to `<project>/src/core/tech.js`):
 street, orbit/satellites, phone (`makePhone`), cold street, battery cell, thermometer, touch grid.
 `kit/examples/*.js` are finished `src/shots.js` files showing how each kit piece is used.
+
+## projects/
+हर प्रोजेक्ट का अलग फ़ोल्डर। `projects/claude-video-editor/` — वीडियो-एडिटिंग स्किल्स/टूल्स का क्लाउड-रेडी किट (`setup.sh`)।
